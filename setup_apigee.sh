@@ -6,7 +6,7 @@ export ORG=ngsaas-5g-kurt
 export ENV=test-1
 export ENVGROUP_HOST=napi-test.kurtkanaskie.net
 
-echo; echo Using Apigee X project "$ORG", environment "$ENV" and envGroup hostname "$ENVGROUP_HOST" ========================
+echo; echo Using Apigee X project \"$ORG\", environment \"$ENV\" and envGroup hostname \"$ENVGROUP_HOST\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
@@ -43,10 +43,11 @@ apigeecli -t $TOKEN -o $ORG products create --name product-recommendations-v1-$E
 apigeecli -t $TOKEN -o $ORG developers create --email 'demo@any.com' --first Demo --last Developer --user demo-developer
 
 apigeecli -t $TOKEN -o $ORG apps create --email 'demo@any.com' -n "Electronics Store $ENV" -p product-recommendations-v1-$ENV
-export APIKEY=$(apigeecli -t $TOKEN -o $ORG apps get --name "Electronics Store $ENV" | jq .[0].credentials[0].consumerKey)
 
 ## Test
 echo Testing ========================
+TOKEN=$(gcloud auth print-access-token)
+APIKEY=$(apigeecli -t $TOKEN -o $ORG apps get --name "Electronics Store $ENV" | jq .[0].credentials[0].consumerKey)
 curl https://$ENVGROUP_HOST/v1/recommendations/openapi
 curl https://$ENVGROUP_HOST/v1/recommendations/products -H x-apikey:$APIKEY
 

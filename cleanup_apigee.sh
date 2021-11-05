@@ -6,7 +6,7 @@ export ORG=ngsaas-5g-kurt
 export ENV=test-1
 export ENVGROUP_HOST=napi-test.kurtkanaskie.net
 
-echo; echo Using Apigee X project "$ORG", environment "$ENV" and envGroup hostname "$ENVGROUP_HOST" ========================
+echo; echo Using Apigee X project \"$ORG\", environment \"$ENV\" and envGroup hostname \"$ENVGROUP_HOST\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
