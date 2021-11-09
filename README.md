@@ -4,12 +4,15 @@
 ## Overview 
 
 This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X proxy, BigQuery ML and Cloud Spanner.
-Cloud Spanner holds a small Product Catalog with rich content, such as descriptions and image references. 
+
 BigQuery contains a sample dataset for the complete Product Catalog IDs and a number of simulated users. 
 It uses Machine Learning to predict their propensity to buy based on the time the user spends on an item, termed the "predicted session duration confidence".
 
+Cloud Spanner holds a small Product Catalog with rich content, such as descriptions and image references. 
+
+
 Apigee exposes an API that proxies to BigQuery to get the product IDs and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the rich product content.
-The proxy then combines that to create the priority sorted result that is sent in the response.
+The proxy then uses that to create the priority sorted result that is sent in the response.
 
 ### Architecture Diagram
 ![Architecture Diagram](product-recommendations-v1.png)
