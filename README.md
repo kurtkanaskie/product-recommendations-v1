@@ -10,7 +10,9 @@ It uses Machine Learning to predict their propensity to buy based on the time th
 Apigee exposes an API that proxies to BigQuery to get the product IDs and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the rich product content.
 The proxy then combines that to create the priority sorted result that is sent in the response.
 
-Diagram: TBD
+### Architecture Diagram
+![Architecture Diagram](product-recommendations-v1.png)
+
 
 ## Prerequisites 
 
