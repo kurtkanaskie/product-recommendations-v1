@@ -74,7 +74,11 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 
 ### Train BigQuery to Predict Customer Propensity
 
-Follow the Machine Learning tutorial [Predicting customer propensity to buy by using BigQuery ML and AI Platform](https://cloud.google.com/architecture/predicting-customer-propensity-to-buy). Then return here to setup Spanner and Apigee.
+OLD: Follow the Machine Learning tutorial [Predicting customer propensity to buy by using BigQuery ML and AI Platform](https://cloud.google.com/architecture/predicting-customer-propensity-to-buy). 
+
+NEW: Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml)
+
+Then return here to setup Spanner and Apigee.
 
 ### Setup Spanner Product Catalog
 
