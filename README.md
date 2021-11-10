@@ -28,7 +28,7 @@ Step Descriptions:
 
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
 
-**NOTE:** If you don't already have Apigee X setup in you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+    NOTE: If you don't already have Apigee X setup in you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
 
@@ -74,9 +74,9 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 
 ### Train BigQuery to Predict Customer Propensity
 
-OLD: Follow the Machine Learning tutorial [Predicting customer propensity to buy by using BigQuery ML and AI Platform](https://cloud.google.com/architecture/predicting-customer-propensity-to-buy). 
-
-NEW: Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml)
+Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml)
+    
+    NOTE: Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
 
 Then return here to setup Spanner and Apigee.
 
