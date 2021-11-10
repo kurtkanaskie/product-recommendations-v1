@@ -14,6 +14,10 @@ Feature: API proxy health
         And response body path $.info.version should be 0.0.1
         And response body path $.info.title should be Product Recommendations
 
+    @sleep
+    Scenario: Wait for 1 seconds
+        Given I wait 1000 milli-seconds
+        
 	@get-products
     Scenario: Verify the backend service is responding
         Given I set X-APIKey header to `clientId`

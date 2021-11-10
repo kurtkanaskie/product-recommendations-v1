@@ -19,6 +19,6 @@
                 </Scopes>
             </GoogleAccessToken>
         </Authentication>
-        <URL>https://content-spanner.googleapis.com/v1/projects/PROJECT_ID/instances/product-catalog/databases/product-catalog/sessions</URL>
+        <URL>https://content-spanner.googleapis.com/v1/projects/PROJECT_ID/instances/product-catalog/databases/product-catalog-v1/sessions</URL>
     </HTTPTargetConnection>
 </ServiceCallout>

@@ -1,9 +1,9 @@
 {
-  "name": "pingstatus",
+  "name": "product-recommendations-v1",
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com:kurtkanaskie/pingstatus-v1.git"
+    "url": "git://github.com:kurtkanaskie/product-recommendations-v1.git"
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
