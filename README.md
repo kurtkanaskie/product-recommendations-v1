@@ -5,21 +5,21 @@
 
 This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X proxy, BigQuery ML and Cloud Spanner.
 
-BigQuery contains a sample dataset for the complete Product Catalog IDs and a number of simulated users. 
+BigQuery contains a sample dataset for the complete Product Catalog Ids and a number of simulated users. 
 It uses Machine Learning to predict their propensity to buy based on the time the user spends on an item, termed the "predicted session duration confidence".
 
 Cloud Spanner holds a small Product Catalog with rich content, such as descriptions and image references. 
 
 
-Apigee exposes an API that proxies to BigQuery to get the product IDs and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the rich product content.
+Apigee exposes an API that proxies to BigQuery to get the product Ids and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the rich product content.
 The proxy then uses that to create the priority sorted result that is sent in the response.
 
 ### Architecture Diagram
 ![Architecture Diagram](product-recommendations-v1.png)
 
 Step Descriptions:
-1. Client request to GET /v1/recommendations/products
-2. Apigee extracts user ID from request header and creates a SQL query using Assign Message policy that is sent to BigQuery.
+1. Client request to GET /v1/recommendations/products with API Key and User Id.
+2. Apigee extracts user Id from request header and creates a SQL query using Assign Message policy that is sent to BigQuery.
 3. Apigee extracts the response from BigQuery and first creates a Spanner session via Service Callout policy,
 4. Then creates a SQL query for Spanner using another Service Callout policy to get the ordered response based on the BigQuery prepensity rating returned from BigQuery.
 5. Finally, Apigee formats the response using JavaScript to match the response definition from the Open API Specification.
@@ -48,10 +48,10 @@ The high level steps are:
 ### Set Environment Variables and Enable APIs
 First set your environment variables:
 ```
-export PROJECT_ID=apigeex-mint-kurt
+export PROJECT_ID=your-apigeex-project-name
 export ORG=$PROJECT_ID
-export ENV=dev-1
-export ENVGROUP_HOSTNAME=xapi-test.kurtkanaskie.net
+export ENV=eval
+export ENVGROUP_HOSTNAME=api.yourdomain.net
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export REGION=regional-us-east1
@@ -63,7 +63,7 @@ gcloud iam service-accounts create datareader --display-name="Data reader for BQ
 gcloud iam service-accounts list | grep datareader 
 
 export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f12)
-# e.g. datareader@apigeex-mint-kurt.iam.gserviceaccount.com
+# e.g. datareader@your-apigeex-project-name.iam.gserviceaccount.com
 echo $SA
 
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
@@ -92,7 +92,7 @@ Return here to setup Apigee.
 The Apigee proxy will be deployed using Maven. 
 The Maven command will create and deploy a proxy (product-recommendations-v1), create an API Product (product-recommendations-v1-$ENV), create an App Developer (demo@any.com) and App (product-recommendations-v1-app-$ENV).
 
-In the project open the cloud shell.
+Clone the repository (doesn't work in Cloud Shell).
 ```
 git clone git@github.com:kurtkanaskie/product-recommendations-v1.git
 ```
@@ -129,13 +129,25 @@ The result of the integration test shows 2 API calls, one to `/openapi` and anot
 It also displays the App credentials which can be used for susequent API calls. 
 For example:
 ```
-curl https://xapi-test.kurtkanaskie.net/v1/recommendations/products -H x-apikey:4W6K0HwG8SezrTZN2mZvaZSEGkWzH0b8zc3PALb49xEA9XcK
+curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:4W6K0HwG8SezrTZN2mZvaZSEGkWzH0b8zc3PALb49xEA9XcK
 ```
 You can also get the API Key for the App using the Apigee API:
 ```
 curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV | jq .credentials[0].consumerKey
 ```
+
+The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](#product-recommendations-v1-oas.yaml) allows the request to specify headers:
+* x-apikey: the App consumer key as per security schemde
+* x-userid: the user identifier making the request (defaults to 000170187170673177-6 if not provided).
+* cache-control: cache the response for 300 seconds or override by specifying "no-cache".
+
+Example:
+```
+curl --location --request GET 'https://$ENVGROUP_HOSTNAME/v1/recommendations/products' \
+--header 'x-apikey: 3ww8dZL5rwIbGM5kXI94' \
+--header 'x-userid: 000170187170673177-6' \
+--header 'Cache-Control: no-cache'
 
 ## Cleanup
 
