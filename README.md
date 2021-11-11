@@ -28,7 +28,9 @@ Step Descriptions:
 
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
 
-    NOTE: If you don't already have Apigee X setup in you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+___
+**NOTE:** If you don't already have Apigee X setup in you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+___
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
 
@@ -74,11 +76,13 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 
 ### Train BigQuery to Predict Customer Propensity
 
-Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml)
-    
-    NOTE: Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
+Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml), then return here to setup Spanner and Apigee.
 
-Then return here to setup Spanner and Apigee.
+Once that is complete, in the BigQuery console select the `prod_recommendations` table, then click PREVIEW to view the results. Make note of the `userId` values. The API Proxy uses those in the request (see below).
+
+___
+**NOTE:** Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
+___
 
 ### Setup Spanner Product Catalog
 
@@ -106,17 +110,10 @@ Modify the pom.xml file's profile to use your `apigee.profile`, `apigee.org`, `a
         <apigee.org>YOUR_ORG_NAME</apigee.org>
         <apigee.env>YOUR_ENV_NAME</apigee.env>
         <api.northbound.domain>YOUR_ENVGROUP_HOSTNAME</api.northbound.domain>
-        <gcp.projectid>YOUR_PROJECT_ID</gcp.projectid> <!-- Same as org but could be a remote project for BQ and Spanner -->
+        <gcp.projectid>YOUR_PROJECT_ID</gcp.projectid> <!-- Same as org, could be remote project for BQ and Spanner -->
         <apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email> <!-- SA Email for GCP Authentication in Proxy -->
         
-        <apigee.apiversion>v1</apigee.apiversion>
-        <apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-        <apigee.config.file>target/edge.json</apigee.config.file>
-        <apigee.config.exportDir>target/test/integration</apigee.config.exportDir>
-        <apigee.config.options>update</apigee.config.options>
-        <apigee.authtype>oauth</apigee.authtype>
-        <apigee.bearer>${bearer}</apigee.bearer>
-        <apigee.options>override</apigee.options>
+        <!-- leave the other fields as is -->
     </properties>
 </profile>
 ```
@@ -127,18 +124,22 @@ mvn -P $ORG-$ENV clean install -Dbearer=$(gcloud auth print-access-token) -Dgoog
 ```
 The result of the integration test shows 2 API calls, one to `/openapi` and another to `/products`.
 It also displays the App credentials which can be used for susequent API calls. 
-For example:
-```
-curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:4W6K0HwG8SezrTZN2mZvaZSEGkWzH0b8zc3PALb49xEA9XcK
-```
-You can also get the API Key for the App using the Apigee API:
+
+#### Testing the API Proxy
+
+You can get the API Key for the App using the Apigee API:
 ```
 curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV | jq .credentials[0].consumerKey
 ```
 
-The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](#product-recommendations-v1-oas.yaml) allows the request to specify headers:
-* x-apikey: the App consumer key as per security schemde
+Then test using curl, for example:
+```
+curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:4W6K0HwG8SezrTZN2mZvaZSEGkWzH0b8zc3PALb49xEA9XcK
+```
+
+The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](product-recommendations-v1-oas.yaml) allows the request to specify headers:
+* x-apikey: the App consumer key as per security scheme
 * x-userid: the user identifier making the request (defaults to 000170187170673177-6 if not provided).
 * cache-control: cache the response for 300 seconds or override by specifying "no-cache".
 
@@ -148,6 +149,7 @@ curl --location --request GET 'https://$ENVGROUP_HOSTNAME/v1/recommendations/pro
 --header 'x-apikey: 3ww8dZL5rwIbGM5kXI94' \
 --header 'x-userid: 000170187170673177-6' \
 --header 'Cache-Control: no-cache'
+```
 
 ## Cleanup
 

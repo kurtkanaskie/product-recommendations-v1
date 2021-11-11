@@ -3,6 +3,9 @@
     <PreFlow name="PreFlow">
         <Request>
             <Step>
+                <Name>CORS</Name>
+            </Step>
+            <Step>
                 <Name>VA-header</Name>
                 <Condition>proxy.pathsuffix != "/openapi"</Condition>
             </Step>

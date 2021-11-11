@@ -15,12 +15,13 @@ Feature: API proxy health
         And response body path $.info.title should be Product Recommendations
 
     @sleep
-    Scenario: Wait for 1 seconds
-        Given I wait 1000 milli-seconds
+    Scenario: Wait for 6 seconds to avoid triggering spike arrest of 10pm
+        Given I wait 6000 milli-seconds
         
 	@get-products
     Scenario: Verify the backend service is responding
         Given I set X-APIKey header to `clientId`
+        And I set Cach-Control header to no-cache
 		When I GET /products
         Then response code should be 200
         And response header Content-Type should be application/json

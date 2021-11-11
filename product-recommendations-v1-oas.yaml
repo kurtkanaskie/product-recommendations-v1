@@ -5,7 +5,7 @@ info:
   description: |
     API that gives product recommendations based on user activities on the ecommerce site.
 servers:
-  - url: 'https://xapi-test.kurtkanaskie.net/v1/recommendations'
+  - url: 'https://ENVGROUP_HOSTNAME/v1/recommendations'
 security:
   - ApiKeyAuth: []
 paths:

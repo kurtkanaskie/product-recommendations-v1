@@ -13,6 +13,6 @@
         <TimeoutInSec ref="">300</TimeoutInSec>
     </ExpirySettings>
     <ExcludeErrorResponse>true</ExcludeErrorResponse>
-    <SkipCacheLookup>request.header.bypass-cache = "true"</SkipCacheLookup>
+    <SkipCacheLookup>request.header.cache-control = "no-cache"</SkipCacheLookup>
     <SkipCachePopulation/>
 </ResponseCache>

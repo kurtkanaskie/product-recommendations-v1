@@ -48,6 +48,7 @@ gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
 --data=productid=GGOEGFKQ020399,description="Fitbit Versa 3 Smartwatch",discount=0,image=watch.jpeg,name="Fitbit Versa 3",price=229.95
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGHPB003410,description="Stadia Primiere Edition",discount=0,image=stadia.jpeg,name="Stadia Primiere Edition",price=69.99
+--data=productid=GGOEGHPB003410,description="Stadia Primiere Edition",discount=0,image=stadia.jpeg,name="Stadia Premiere Edition",price=69.99
 
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
+
