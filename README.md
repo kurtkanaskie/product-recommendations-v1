@@ -29,13 +29,13 @@ Step Descriptions:
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
 
 ___
-**NOTE:** If you don't already have Apigee X setup in you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+**NOTE:** If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
 ___
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
 
 The API proxy uses a separate Service Account (datareader) for GCP authentication to access Big Query and Spanner.
-We'll get and use a GCP accesss token to deploy the proxy.
+We'll get and use a GCP accesss token using "gcloud auth print-access-token" to deploy the proxy.
 
 
 The high level steps are:
