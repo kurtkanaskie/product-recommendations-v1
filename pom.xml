@@ -38,41 +38,23 @@
 	-->
 	<profiles>
 		<profile>
-			<id>dev-1</id>
+			<id>eval</id>
 			<properties>
-				<apigee.profile>dev-1</apigee.profile>
-				<apigee.apiversion>v1</apigee.apiversion>
+				<apigee.profile>eval</apigee.profile>
+				<apigee.org>${apigeeOrg}</apigee.org>
+		        <apigee.env>${apigeeEnv}</apigee.env>
+		        <api.northbound.domain>${envGroupHostname}</api.northbound.domain>
+				<apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
+				<gcp.projectid>${gcpProjectId}</gcp.projectid>
+
 				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-				<apigee.org>ngsaas-5g-kurt</apigee.org>
-				<apigee.env>dev-1</apigee.env>
-				<apigee.config.file>target/edge.json</apigee.config.file>
+				<apigee.apiversion>v1</apigee.apiversion>
+        		<apigee.config.file>target/edge.json</apigee.config.file>
 				<apigee.config.exportDir>target/test/integration</apigee.config.exportDir>
 				<apigee.config.options>update</apigee.config.options>
 				<apigee.authtype>oauth</apigee.authtype>
-				<apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
 				<apigee.bearer>${bearer}</apigee.bearer>
-				<api.northbound.domain>napi-dev.kurtkanaskie.net</api.northbound.domain>
 				<apigee.options>override</apigee.options>
-				<gcp.projectid>bigquery-310116</gcp.projectid>
-			</properties>
-		</profile>
-		<profile>
-			<id>test</id>
-			<properties>
-				<apigee.profile>test</apigee.profile>
-				<apigee.apiversion>v1</apigee.apiversion>
-				<apigee.hosturl>https://apigee.googleapis.com</apigee.hosturl>
-				<apigee.org>apigeex-mint-kurt</apigee.org>
-				<apigee.env>test</apigee.env>
-				<apigee.config.file>target/edge.json</apigee.config.file>
-				<apigee.config.exportDir>target/test/integration</apigee.config.exportDir>
-				<apigee.config.options>update</apigee.config.options>
-				<apigee.authtype>oauth</apigee.authtype>
-				<apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
-				<apigee.bearer>${bearer}</apigee.bearer>
-				<api.northbound.domain>xapi-test.kurtkanaskie.net</api.northbound.domain>
-				<apigee.options>override</apigee.options>
-				<gcp.projectid>apigeex-mint-kurt</gcp.projectid>
 			</properties>
 		</profile>
 	</profiles>

@@ -6,22 +6,22 @@
 This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X proxy, BigQuery ML and Cloud Spanner.
 
 BigQuery contains a sample dataset for the complete Product Catalog Ids and a number of simulated users. 
-It uses Machine Learning to predict their propensity to buy based on the time the user spends on an item, termed the "predicted session duration confidence".
+It uses Machine Learning to predict their propensity to buy based on the time the user spends on an item, termed the "predicted session duration confidence", which is a numerical value ordered descending (higher is more likely to buy).
 
 Cloud Spanner holds a small Product Catalog with rich content, such as descriptions and image references. 
-
+The items are created and ordered differently than the BigQuery result (e.g ascending by the last few digits of each product Id).
 
 Apigee exposes an API that proxies to BigQuery to get the product Ids and the "predicted session duration confidence" for a particular user and then makes a callout to Spanner to get the rich product content.
-The proxy then uses that to create the priority sorted result that is sent in the response.
+The proxy then uses both responses to create the priority sorted result that is sent in the response.
 
 ### Architecture Diagram
 ![Architecture Diagram](product-recommendations-v1.png)
 
 Step Descriptions:
 1. Client request to GET /v1/recommendations/products with API Key and User Id.
-2. Apigee extracts user Id from request header and creates a SQL query using Assign Message policy that is sent to BigQuery.
-3. Apigee extracts the response from BigQuery and first creates a Spanner session via Service Callout policy,
-4. Then creates a SQL query for Spanner using another Service Callout policy to get the ordered response based on the BigQuery prepensity rating returned from BigQuery.
+2. Apigee extracts user Id from request header, creates a SQL query using Assign Message policy, sends that to BigQuery and processes the response.
+3. Apigee creates a Spanner session via Service Callout policy and stores the session name.
+4. Apigee then creates a SQL query for Spanner using another Service Callout policy to get the ordered response based on the BigQuery prepensity rating returned from BigQuery.
 5. Finally, Apigee formats the response using JavaScript to match the response definition from the Open API Specification.
 
 ## Prerequisites 
@@ -50,7 +50,7 @@ The high level steps are:
 ### Set Environment Variables and Enable APIs
 First set your environment variables:
 ```
-export PROJECT_ID=your-apigeex-project-name
+export PROJECT_ID=your_apigeex_project_name
 export ORG=$PROJECT_ID
 export ENV=eval
 export ENVGROUP_HOSTNAME=api.yourdomain.net
@@ -58,8 +58,19 @@ export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export REGION=regional-us-east1
 ```
+Other environment variables that are set below
+```
+SA 
+CUSTOMER_USERID
+PRODUCT_ID_1
+PRODUCT_ID_2
+PRODUCT_ID_3
+PRODUCT_ID_4
+PRODUCT_ID_5
+```
 
 ### Create datareader Service Account
+Create a "datareader" service account and assign Spanner and BigQuery roles. 
 ```
 gcloud iam service-accounts create datareader --display-name="Data reader for BQ and Spanner Demo"
 gcloud iam service-accounts list | grep datareader 
@@ -75,18 +86,48 @@ gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA"
 ```
 
 ### Train BigQuery to Predict Customer Propensity
-
-Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml), then return here to setup Spanner and Apigee.
-
-Once that is complete, in the BigQuery console select the `prod_recommendations` table, then click PREVIEW to view the results. Make note of the `userId` values. The API Proxy uses those in the request (see below).
-
 ___
 **NOTE:** Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
 ___
 
+Follow the Machine Learning tutorial [Building an e-commerce recommendation system by using BigQuery ML](https://cloud.google.com/architecture/building-a-recommendation-system-with-bigqueryml), then return here to setup Spanner and Apigee. 
+Once the tutorial is complete, go to the BigQuery console and 
+* select the `prod_recommendations` table, 
+* then click PREVIEW to view the results. 
+
+Note the `userId` values, the API Proxy uses those in the request to get results (see below).
+Select any of the `userId` values, set an environment variable and run a query against BigQuery to see the product recomendations. We'll use the `itemId` values when we set up the Spanner Product Catalog in the next step.
+
+```
+export CUSTOMER_USERID=userid-value-from-biquery
+
+bq query --nouse_legacy_sql \
+    "select * from \`$PROJECT_ID.bqml.prod_recommendations\` where userId = \"$CUSTOMER_USERID\""
++-----------------------+----------------+---------------------------------------+
+|        userId         |     itemId     | predicted_session_duration_confidence |
++-----------------------+----------------+---------------------------------------+
+| 6929470170340317899-1 | GGOEGAAX0037   |                     40161.10446942589 |
+| 6929470170340317899-1 | GGOEGAAX0351   |                    27204.111219270915 |
+| 6929470170340317899-1 | GGOEGDWC020199 |                    25863.861349754334 |
+| 6929470170340317899-1 | GGOEYDHJ056099 |                     27642.28480729123 |
+| 6929470170340317899-1 | GGOEGAAX0318   |                    24585.509088154067 |
++-----------------------+----------------+---------------------------------------+
+```
+
 ### Setup Spanner Product Catalog
 
-Set up Spanner Product Catalog (5 items) by running the [setup_spanner.sh](#setup_spanner.sh) shell script.
+The Spanner Product Catalog only contains the items that where used in the BigQuery training step for a specific user. We'll set `productid` values that where associated to the usesrId values during the ML training step.
+
+Create environent variables for each product Id using the values from the outpuot of the BigQuery query above (do not use these values directly).
+```
+export PRODUCT_ID_1=GGOEGAAX0037
+export PRODUCT_ID_2=GGOEGAAX0351
+export PRODUCT_ID_3=GGOEGDWC020199
+export PRODUCT_ID_4=GGOEYDHJ056099
+export PRODUCT_ID_5=GGOEGAAX0318
+```
+
+Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog .
 
 Return here to setup Apigee.
 
@@ -101,54 +142,58 @@ Clone the repository (doesn't work in Cloud Shell).
 git clone git@github.com:kurtkanaskie/product-recommendations-v1.git
 ```
 
-Modify the pom.xml file's profile to use your `apigee.profile`, `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, and `googletoken.email`.
+Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, and `googletoken.email`. These values will be set via the command line.
 ```
 <profile>
-    <id>YOUR_PROFILE_NAME</id>
+    <id>eval</id> <!-- unique profile name -->
     <properties>
-        <apigee.profile>YOUR_PROFILE_NAME</apigee.profile> <!-- Typically a combination of ORG-ENV -->
-        <apigee.org>YOUR_ORG_NAME</apigee.org>
-        <apigee.env>YOUR_ENV_NAME</apigee.env>
-        <api.northbound.domain>YOUR_ENVGROUP_HOSTNAME</api.northbound.domain>
-        <gcp.projectid>YOUR_PROJECT_ID</gcp.projectid> <!-- Same as org, could be remote project for BQ and Spanner -->
-        <apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email> <!-- SA Email for GCP Authentication in Proxy -->
-        
-        <!-- leave the other fields as is -->
+        <apigee.org>${apigeeOrg}</apigee.org>
+        <apigee.env>${apigeeEnv}</apigee.env>
+        <api.northbound.domain>${envGroupHostname}</api.northbound.domain>
+
+        <gcp.projectid>${gcpProjectId}</gcp.projectid> <!-- Same as org, could be remote project for BQ and Spanner -->
+        <apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email> <!-- SA Email for GCP Auth in Proxy -->
     </properties>
 </profile>
 ```
 
 Run Maven to install the proxy and it's associated artifacts and then test the API, all in one command.
 ```
-mvn -P $ORG-$ENV clean install -Dbearer=$(gcloud auth print-access-token) -DgoogleTokenEmail=$SA
+mvn -P eval clean install \
+    -Dbearer=$(gcloud auth print-access-token) \
+    -DapigeeOrg=$ORG \
+    -DapigeeEnv=$ENV \
+    -DenvGroupHostname=$ENVGROUP_HOSTNAME \
+    -DgcpProjectId=$PROJECT_ID \
+    -DgoogleTokenEmail=$SA
 ```
-The result of the integration test shows 2 API calls, one to `/openapi` and another to `/products`.
+The result of the maven command shows the integration test output, one to `/openapi` and another to `/products`.
 It also displays the App credentials which can be used for susequent API calls. 
 
 #### Testing the API Proxy
 
 You can get the API Key for the App using the Apigee API:
 ```
-curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV | jq .credentials[0].consumerKey
+APIKEY=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV | jq -r .credentials[0].consumerKey)
 ```
 
 Then test using curl, for example:
 ```
-curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:3ww8dZL5rwIbGM5kXI94
+curl -s https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:$APIKEY | jq
 ```
 
 The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](product-recommendations-v1-oas.yaml) allows the request to specify headers:
 * x-apikey: the App consumer key as per security scheme
-* x-userid: the user identifier making the request (defaults to 000170187170673177-6 if not provided).
+* x-userid: the user identifier making the request (defaults to 8147666854244452077-2 in the proxy if not provided).
 * cache-control: cache the response for 300 seconds or override by specifying "no-cache".
 
 Example:
 ```
-curl --location --request GET "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
---header 'x-apikey:3ww8dZL5rwIbGM5kXI94' \
---header 'x-userid:000170187170673177-6' \
---header 'Cache-Control:no-cache'
+curl -s --location --request GET "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
+--header "x-apikey:$APIKEY" \
+--header "x-userid:$CUSTOMER_USERID" \
+--header "Cache-Control:no-cache" | jq
 ```
 
 ## Cleanup
