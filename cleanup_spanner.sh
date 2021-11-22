@@ -1,6 +1,6 @@
 #! /bin/bash
 
-export PROJECT=ngsaas-5g-kurt
+export PROJECT=apigeex-mint-kurt
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export REGION=regional-us-east1

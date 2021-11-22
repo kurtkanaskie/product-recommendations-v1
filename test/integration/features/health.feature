@@ -18,12 +18,26 @@ Feature: API proxy health
     Scenario: Wait for 6 seconds to avoid triggering spike arrest of 10pm
         Given I wait 6000 milli-seconds
         
-	@get-products
+	@get-products-no-cache
     Scenario: Verify the backend service is responding
         Given I set X-APIKey header to `clientId`
-        And I set Cach-Control header to no-cache
+        And I set Cache-Control header to no-cache
 		When I GET /products
         Then response code should be 200
         And response header Content-Type should be application/json
+        And response header X-Cache-Control should be no-cache
+        And response body path $.products should be of type array
+
+    @sleep
+    Scenario: Wait for 6 seconds to avoid triggering spike arrest of 10pm
+        Given I wait 6000 milli-seconds
+
+    @get-products-cache
+    Scenario: Verify the backend service is responding
+        Given I set X-APIKey header to `clientId`
+        When I GET /products
+        Then response code should be 200
+        And response header Content-Type should be application/json
+        And response header X-Cache-Control should not be no-cache
         And response body path $.products should be of type array
         

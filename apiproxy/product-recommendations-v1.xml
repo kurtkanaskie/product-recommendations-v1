@@ -1,8 +1,8 @@
-<APIProxy revision="9" name="product-recommendations-v1">
+<APIProxy revision="14" name="product-recommendations-v1">
     <DisplayName>product-recommendations-v1</DisplayName>
     <Description>Added PROJECT_ID to policies and target for replacement. DESCRIPTION</Description>
-    <CreatedAt>1636644306850</CreatedAt>
-    <LastModifiedAt>1636644306850</LastModifiedAt>
+    <CreatedAt>1637000821536</CreatedAt>
+    <LastModifiedAt>1637000821536</LastModifiedAt>
     <BasePaths>/v1/recommendations</BasePaths>
     <Policies>
         <Policy>VA-header</Policy>
@@ -22,8 +22,9 @@
         <Policy>EV-spanner-session</Policy>
         <Policy>AM-copy-false</Policy>
         <Policy>SC-product-catalog-lookup</Policy>
-        <Policy>QU-check</Policy>
         <Policy>CORS</Policy>
+        <Policy>QU-check</Policy>
+        <Policy>CI-spanner-session</Policy>
     </Policies>
     <ProxyEndpoints>
         <ProxyEndpoint>default</ProxyEndpoint>

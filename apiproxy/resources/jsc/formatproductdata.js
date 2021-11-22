@@ -22,4 +22,5 @@ var output = { "products" : products };
 // convert object to a string and replace the HTTP response with new, formatted data
 context.proxyResponse.content = JSON.stringify(output);
 
-
+// For integration tests, to test when cache was set.
+context.setVariable("response.header.x-cache-control", context.getVariable("request.header.cache-control"));

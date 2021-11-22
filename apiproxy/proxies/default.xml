@@ -46,6 +46,10 @@
                     <Name>JS-create-product-id-list</Name>
                 </Step>
                 <Step>
+                    <Condition>request.header.cache-control = "no-cache"</Condition>
+                    <Name>CI-spanner-session</Name>
+                </Step>
+                <Step>
                     <Name>CL-spanner-session</Name>
                 </Step>
                 <Step>

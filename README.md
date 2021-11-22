@@ -135,7 +135,7 @@ curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 
 Then test using curl, for example:
 ```
-curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:4W6K0HwG8SezrTZN2mZvaZSEGkWzH0b8zc3PALb49xEA9XcK
+curl https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:3ww8dZL5rwIbGM5kXI94
 ```
 
 The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](product-recommendations-v1-oas.yaml) allows the request to specify headers:
@@ -145,10 +145,10 @@ The API defined by the Open API Specification in [product-recommendations-v1-oas
 
 Example:
 ```
-curl --location --request GET 'https://$ENVGROUP_HOSTNAME/v1/recommendations/products' \
---header 'x-apikey: 3ww8dZL5rwIbGM5kXI94' \
---header 'x-userid: 000170187170673177-6' \
---header 'Cache-Control: no-cache'
+curl --location --request GET "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
+--header 'x-apikey:3ww8dZL5rwIbGM5kXI94' \
+--header 'x-userid:000170187170673177-6' \
+--header 'Cache-Control:no-cache'
 ```
 
 ## Cleanup

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-export PROJECT=ngsaas-5g-kurt
+export PROJECT=apigeex-mint-kurt
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export REGION=regional-us-east1
@@ -36,19 +36,21 @@ gcloud spanner databases ddl update $SPANNER_DATABASE \
 
 # Create data
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGAAX0568,description="The ultimate 5G Google phone.",discount=0,image=pixel.jpeg,name="Google Pixel 5",price=601.99
+--data=productid=GGOEGAAX0351,description="The ultimate sunglasses",discount=0,image="products_Images/5.image.181026.jpg",name="Aviator Sunglasses",price=42.42
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGAAX0690,description="Google Pixel Buds",discount=0,image=pixel-buds.jpeg,name="Pixel Buds",price=152.15
+--data=productid=GGOEGAAX0568,description="Best Coffee Mug",discount=0,image="products_Images/4.image.181817.jpg",name="Coffee Mug",price=4.20
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGDHB072199,description="Google Pixelbook Go",discount=0,image=pixelbook.png,name="Pixelbook",price=584.10
+--data=productid=GGOEGAAX0037,description="Bamboo glass jar",discount=0,image="products_Images/1.image.181347.jpg",name="Bamboo glass jar",price=39.99
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGFKQ020399,description="Fitbit Versa 3 Smartwatch",discount=0,image=watch.jpeg,name="Fitbit Versa 3",price=229.95
+--data=productid=GGOEGBRA037499,description="Most comfortable loafers",discount=0,image="products_Images/3.image.182234.jpg",name="Loafers",price=38.99
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=GGOEGHPB003410,description="Stadia Primiere Edition",discount=0,image=stadia.jpeg,name="Stadia Premiere Edition",price=69.99
+--data=productid=GGOEYDHJ056099,description="Hotest hairdryer",discount=0,image="products_Images/2.image.182110.jpg",name="Hairdryer",price=84.99
 
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
+
+
 

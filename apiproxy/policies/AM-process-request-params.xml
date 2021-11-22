@@ -3,7 +3,7 @@
     <DisplayName>AM-process-request-params</DisplayName>
     <AssignVariable>
         <Name>userid</Name>
-        <Value>000170187170673177-6</Value>
+        <Value>8147666854244452077-2</Value>
         <Ref>request.header.x-userid</Ref>
     </AssignVariable>
     <Remove>
