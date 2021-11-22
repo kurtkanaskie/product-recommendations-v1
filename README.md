@@ -120,7 +120,7 @@ The Spanner Product Catalog only contains the items that where used in the BigQu
 
 Create environent variables for each product Id using the values from the output of the BigQuery query above (do not use these values directly). 
 
-NOTE: The order in which you create them, is the order in which they are returned, but since Apigee is applying the BigQuery ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
+NOTE: The order in which you create them, is the order in which they are returned, but since Apigee is applying the BigQuery "prediction" ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
 ```
 export PRODUCT_ID_1=GGOEGAAX0037
 export PRODUCT_ID_2=GGOEGAAX0318
