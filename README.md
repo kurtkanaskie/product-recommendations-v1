@@ -118,13 +118,15 @@ bq query --nouse_legacy_sql \
 
 The Spanner Product Catalog only contains the items that where used in the BigQuery training step for a specific user. We'll set `productid` values that where associated to the usesrId values during the ML training step.
 
-Create environent variables for each product Id using the values from the outpuot of the BigQuery query above (do not use these values directly).
+Create environent variables for each product Id using the values from the output of the BigQuery query above (do not use these values directly). 
+
+NOTE: The order in which you create them, is the order in which they are returned, but since Apigee is applying the BigQuery ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
 ```
 export PRODUCT_ID_1=GGOEGAAX0037
-export PRODUCT_ID_2=GGOEGAAX0351
-export PRODUCT_ID_3=GGOEGDWC020199
-export PRODUCT_ID_4=GGOEYDHJ056099
-export PRODUCT_ID_5=GGOEGAAX0318
+export PRODUCT_ID_2=GGOEGAAX0318
+export PRODUCT_ID_3=GGOEGAAX0351
+export PRODUCT_ID_4=GGOEGDWC020199
+export PRODUCT_ID_5=GGOEYDHJ056099
 ```
 
 Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog .
