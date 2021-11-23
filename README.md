@@ -135,7 +135,7 @@ export PRODUCT_ID_4=GGOEGDWC020199
 export PRODUCT_ID_5=GGOEYDHJ056099
 ```
 
-Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog .
+Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog.
 
 Return here to setup Apigee.
 
@@ -147,7 +147,7 @@ The Maven command will create and deploy a proxy (product-recommendations-v1), c
 
 Clone the repository (doesn't work in Cloud Shell).
 ```
-git clone git@github.com:kurtkanaskie/product-recommendations-v1.git
+git clone https://github.com/kurtkanaskie/product-recommendations-v1
 ```
 
 Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, and `googletoken.email`. These values will be set via the command line.
