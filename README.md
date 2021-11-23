@@ -98,18 +98,22 @@ Once the tutorial is complete, go to the BigQuery console and
 Note the `userId` values, the API Proxy uses those in the request to get results (see below).
 Select any of the `userId` values, set an environment variable and run a query against BigQuery to see the product recomendations. We'll use the `itemId` values when we set up the Spanner Product Catalog in the next step.
 
+Next run the BigQuery query command to show the "prediction" ordered results.
+For example:
+
 ```
-export CUSTOMER_USERID=userid-value-from-biquery
+export CUSTOMER_USERID=6929470170340317899-1
 
 bq query --nouse_legacy_sql \
-    "select * from \`$PROJECT_ID.bqml.prod_recommendations\` where userId = \"$CUSTOMER_USERID\""
+    "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A where A.userid = \"$CUSTOMER_USERID\"" \
+    ORDER BY A.predicted_session_duration_confidence DESC
 +-----------------------+----------------+---------------------------------------+
 |        userId         |     itemId     | predicted_session_duration_confidence |
 +-----------------------+----------------+---------------------------------------+
 | 6929470170340317899-1 | GGOEGAAX0037   |                     40161.10446942589 |
+| 6929470170340317899-1 | GGOEYDHJ056099 |                     27642.28480729123 |
 | 6929470170340317899-1 | GGOEGAAX0351   |                    27204.111219270915 |
 | 6929470170340317899-1 | GGOEGDWC020199 |                    25863.861349754334 |
-| 6929470170340317899-1 | GGOEYDHJ056099 |                     27642.28480729123 |
 | 6929470170340317899-1 | GGOEGAAX0318   |                    24585.509088154067 |
 +-----------------------+----------------+---------------------------------------+
 ```
@@ -120,7 +124,9 @@ The Spanner Product Catalog only contains the items that where used in the BigQu
 
 Create environent variables for each product Id using the values from the output of the BigQuery query above (do not use these values directly). 
 
-NOTE: The order in which you create them, is the order in which they are returned, but since Apigee is applying the BigQuery "prediction" ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
+NOTE: The order in which you create items in Spanner, is the order in which they are returned, but since Apigee is applying the BigQuery "prediction" ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
+
+For example: (don't use these values, yours will be different)
 ```
 export PRODUCT_ID_1=GGOEGAAX0037
 export PRODUCT_ID_2=GGOEGAAX0318
@@ -192,7 +198,7 @@ The API defined by the Open API Specification in [product-recommendations-v1-oas
 
 Example:
 ```
-curl -s --location --request GET "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
+curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
 --header "x-apikey:$APIKEY" \
 --header "x-userid:$CUSTOMER_USERID" \
 --header "Cache-Control:no-cache" | jq

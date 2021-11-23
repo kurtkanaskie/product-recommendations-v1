@@ -31,19 +31,19 @@ gcloud spanner databases ddl update $SPANNER_DATABASE \
 
 # Create data
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_1,description="The ultimate sunglasses",discount=0,image="products_Images/1.image.181347.jpg",name="Bamboo glass jar",price=39.99
+--data=productid=$PRODUCT_ID_1,description="Bamboo glass jar",discount=0,image="products_Images/1.image.181347.jpg",name="Bamboo glass jar",price=19.99
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_2,description="Best Coffee Mug",discount=0,image="products_Images/2.image.182110.jpg",name="Hairdryer",price=84.99
+--data=productid=$PRODUCT_ID_2,description="Hotest hairdryer",discount=0,image="products_Images/2.image.182110.jpg",name="Hairdryer",price=84.99
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_3,description="Bamboo glass jar",discount=0,image="products_Images/3.image.182234.jpg",name="Loafers",price=38.99
+--data=productid=$PRODUCT_ID_3,description="Most comfortable loafers",discount=0,image="products_Images/3.image.182234.jpg",name="Loafers",price=38.99
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_4,description="Most comfortable loafers",discount=0,image="products_Images/4.image.181817.jpg",name="Coffee Mug",price=4.20
+--data=productid=$PRODUCT_ID_4,description="Best Coffee Mug",discount=0,image="products_Images/4.image.181817.jpg",name="Coffee Mug",price=4.20
 
 gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_5,description="Hotest hairdryer",discount=0,image="products_Images/5.image.181026.jpg",name="Aviator Sunglasses",price=42.42
+--data=productid=$PRODUCT_ID_5,description="The ultimate sunglasses",discount=0,image="products_Images/5.image.181026.jpg",name="Aviator Sunglasses",price=42.42
 
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
 
