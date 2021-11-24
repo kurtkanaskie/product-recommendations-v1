@@ -221,6 +221,45 @@ curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
 --header "x-apikey:$APIKEY" \
 --header "x-userid:$CUSTOMER_USERID" \
 --header "Cache-Control:no-cache" | jq
+{
+  "products": [
+    {
+      "productid": "GGOEGAAX0037",
+      "name": "Bamboo glass jar",
+      "description": "Bamboo glass jar",
+      "price": "19.99",
+      "image": "products_Images/1.image.181347.jpg"
+    },
+    {
+      "productid": "GGOEYDHJ056099",
+      "name": "Aviator Sunglasses",
+      "description": "The ultimate sunglasses",
+      "price": "42.42",
+      "image": "products_Images/5.image.181026.jpg"
+    },
+    {
+      "productid": "GGOEGAAX0351",
+      "name": "Loafers",
+      "description": "Most comfortable loafers",
+      "price": "38.99",
+      "image": "products_Images/3.image.182234.jpg"
+    },
+    {
+      "productid": "GGOEGDWC020199",
+      "name": "Coffee Mug",
+      "description": "Best Coffee Mug",
+      "price": "4.2",
+      "image": "products_Images/4.image.181817.jpg"
+    },
+    {
+      "productid": "GGOEGAAX0318",
+      "name": "Hairdryer",
+      "description": "Hotest hairdryer",
+      "price": "84.99",
+      "image": "products_Images/2.image.182110.jpg"
+    }
+  ]
+}
 ```
 
 **KEY TAKEAWAY**: the order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's becasue the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
