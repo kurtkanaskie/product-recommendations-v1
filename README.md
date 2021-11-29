@@ -69,11 +69,6 @@ Other environment variables that are set below
 SA 
 CUSTOMER_USERID
 APIKEY
-PRODUCT_ID_1
-PRODUCT_ID_2
-PRODUCT_ID_3
-PRODUCT_ID_4
-PRODUCT_ID_5
 ```
 
 ### Enable APIs
@@ -134,23 +129,12 @@ bq query --nouse_legacy_sql \
 
 ### Setup Spanner Product Catalog
 
-The Spanner Product Catalog only contains the items that where used in the BigQuery training step for a specific user. We'll set `productid` values that where associated to the usesrId values during the ML training step.
+The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s.
 
-Create environent variables for each product Id using the values from the output of the BigQuery query above. 
-
-NOTE: The order in which you create items in Spanner, is the order in which they are returned, but since Apigee is applying the BigQuery "prediction" ordering, the API response order will be different. Compare the response from the Spanner script to that from the API proxy.
-
-For example: (don't use these values, yours will be different)
-```
-export PRODUCT_ID_1=GGOEGAAX0037
-export PRODUCT_ID_2=GGOEGAAX0318
-export PRODUCT_ID_3=GGOEGAAX0351
-export PRODUCT_ID_4=GGOEGDWC020199
-export PRODUCT_ID_5=GGOEYDHJ056099
-```
+NOTE: The order in which the items are created in Spanner, is opposite of those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
 Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog.
-It outputs the entries that where created. 
+It uses the `CUSTOMER_USERID` and outputs the entries that where created. 
 
 You can also run a gcloud command to view, for example:
 ```

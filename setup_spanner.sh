@@ -1,6 +1,11 @@
 #! /bin/bash
 
-echo; echo Using Apigee X project \"$PROJECT_ID\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$REGION\"
+export PROJECT=apigeex-mint-kurt
+export SPANNER_INSTANCE=product-catalog
+export SPANNER_DATABASE=product-catalog-v1
+export REGION=regional-us-east1
+
+echo; echo Using Apigee X project \"$PROJECT\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
@@ -10,7 +15,7 @@ fi
 echo Proceeding...
 
 # Set project for gcloud commands 
-gcloud config set project $PROJECT_ID
+gcloud config set project $PROJECT
 
 # Enable API
 # Console: https://pantheon.corp.google.com/apis/library/spanner.googleapis.com
@@ -29,23 +34,26 @@ gcloud spanner databases create $SPANNER_DATABASE --instance $SPANNER_INSTANCE
 gcloud spanner databases ddl update $SPANNER_DATABASE \
 --ddl='CREATE TABLE products (productid STRING(20) NOT NULL, name STRING(100), description STRING(1024), price FLOAT64, discount FLOAT64, image STRING(1024)) PRIMARY KEY(productid);'
 
-# Create data
-gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_1,description="Bamboo glass jar",discount=0,image="products_Images/1.image.181347.jpg",name="Bamboo glass jar",price=19.99
+# Add product data to Spanner
+# Get list of IDs (5 total) from BigQuery based on the CUSTOMER_USERID to create in Spanner.
+# Sort ascending, opposite of propensity to buy, to demonstrate different results.
 
-gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_2,description="Hotest hairdryer",discount=0,image="products_Images/2.image.182110.jpg",name="Hairdryer",price=84.99
+IDS=$(bq query --format json --nouse_legacy_sql \
+  "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A where A.userid = \"$CUSTOMER_USERID\"" \
+  ORDER BY A.predicted_session_duration_confidence ASC | jq -r .[].itemId)
 
-gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_3,description="Most comfortable loafers",discount=0,image="products_Images/3.image.182234.jpg",name="Loafers",price=38.99
+DATAS='description=Bamboo glass jar,discount=0,image=products_Images/bamboo-glass-jar.jpg,name=Bamboo glass jar,price=19.99'\
+X'description=Hotest hairdryer,discount=0,image=products_Images/hairdryer.jpg,name=Hairdryer,price=84.99'\
+X'description=Most comfortable loafers,discount=0,image=products_Images/loafers.jpg,name=Loafers,price=38.99'\
+X'description=Best Coffee Mug,discount=0,image=products_Images/mug.jpg,name=Coffee Mug,price=4.20'\
+X'description=The ultimate sunglasses,discount=0,image=products_Images/sunglasses.jpg,name=Aviator Sunglasses,price=42.42'
 
-gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_4,description="Best Coffee Mug",discount=0,image="products_Images/4.image.181817.jpg",name="Coffee Mug",price=4.20
-
-gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products \
---data=productid=$PRODUCT_ID_5,description="The ultimate sunglasses",discount=0,image="products_Images/5.image.181026.jpg",name="Aviator Sunglasses",price=42.42
-
+for i in {1..5}
+do
+  ID=$(echo $IDS | cut -f $i -d " ")
+  DATA=$(echo $DATAS | cut -f $i -d "X")
+  gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products --data="productid=$ID,$DATA"
+done
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
-
 
 
