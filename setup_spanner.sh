@@ -1,11 +1,6 @@
 #! /bin/bash
 
-export PROJECT=apigeex-mint-kurt
-export SPANNER_INSTANCE=product-catalog
-export SPANNER_DATABASE=product-catalog-v1
-export REGION=regional-us-east1
-
-echo; echo Using Apigee X project \"$PROJECT\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
+echo; echo Using Apigee X project \"$PROJECT_ID\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
@@ -15,7 +10,7 @@ fi
 echo Proceeding...
 
 # Set project for gcloud commands 
-gcloud config set project $PROJECT
+gcloud config set project $PROJECT_ID
 
 # Enable API
 # Console: https://pantheon.corp.google.com/apis/library/spanner.googleapis.com
@@ -52,6 +47,7 @@ for i in {1..5}
 do
   ID=$(echo $IDS | cut -f $i -d " ")
   DATA=$(echo $DATAS | cut -f $i -d "X")
+  echo -n "$ID - "
   gcloud spanner rows insert --database=$SPANNER_DATABASE --table=products --data="productid=$ID,$DATA"
 done
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'

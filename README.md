@@ -131,7 +131,7 @@ bq query --nouse_legacy_sql \
 
 The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s.
 
-NOTE: The order in which the items are created in Spanner, is opposite of those returned from BigQuery. This allows us to observe the differences from the "prediction".
+NOTE: The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
 Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog.
 It uses the `CUSTOMER_USERID` and outputs the entries that where created. 
@@ -141,11 +141,11 @@ You can also run a gcloud command to view, for example:
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
 
 productid       name                description               price  discount  image
-GGOEGAAX0037    Bamboo glass jar    Bamboo glass jar          19.99  0         products_Images/1.image.181347.jpg
-GGOEGAAX0318    Hairdryer           Hotest hairdryer          84.99  0         products_Images/2.image.182110.jpg
-GGOEGAAX0351    Loafers             Most comfortable loafers  38.99  0         products_Images/3.image.182234.jpg
-GGOEGDWC020199  Coffee Mug          Best Coffee Mug           4.2    0         products_Images/4.image.181817.jpg
-GGOEYDHJ056099  Aviator Sunglasses  The ultimate sunglasses   42.42  0         products_Images/5.image.181026.jpg
+GGOEGAAX0037    Aviator Sunglasses  The ultimate sunglasses   42.42  0         products_Images/sunglasses.jpg
+GGOEGAAX0318    Bamboo glass jar    Bamboo glass jar          19.99  0         products_Images/bamboo-glass-jar.jpg
+GGOEGAAX0351    Loafers             Most comfortable loafers  38.99  0         products_Images/loafers.jpg
+GGOEGDWC020199  Hairdryer           Hotest hairdryer          84.99  0         products_Images/hairdryer.jpg
+GGOEYDHJ056099  Coffee Mug          Best Coffee Mug           4.2    0         products_Images/mug.jpg
 ```
 
 ### Setup Apigee X Proxy
@@ -191,59 +191,61 @@ APIKEY=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
 
 Then test using curl, for example:
 ```
-curl -s https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:$APIKEY | jq
+curl -s https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:$APIKEY -H "x-userid:$CUSTOMER_USERID" | jq
 ```
 
 The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](product-recommendations-v1-oas.yaml) allows the request to specify headers:
 * x-apikey: the App consumer key as per security scheme
-* x-userid: the user identifier making the request (defaults to 8147666854244452077-2 in the proxy if not provided).
+* x-userid: the user identifier making the request (defaults to 6929470170340317899-1 in the proxy if not provided).
 * cache-control: cache the response for 300 seconds or override by specifying "no-cache".
 
 Example:
 ```
 curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
---header "x-apikey:$APIKEY" \
---header "x-userid:$CUSTOMER_USERID" \
---header "Cache-Control:no-cache" | jq
+-H "x-apikey:$APIKEY" \
+-H "x-userid:$CUSTOMER_USERID" \
+-H "Cache-Control:no-cache" | jq
+
 {
   "products": [
     {
       "productid": "GGOEGAAX0037",
-      "name": "Bamboo glass jar",
-      "description": "Bamboo glass jar",
-      "price": "19.99",
-      "image": "products_Images/1.image.181347.jpg"
-    },
-    {
-      "productid": "GGOEYDHJ056099",
       "name": "Aviator Sunglasses",
       "description": "The ultimate sunglasses",
       "price": "42.42",
-      "image": "products_Images/5.image.181026.jpg"
+      "image": "products_Images/sunglasses.jpg"
+    },
+    {
+      "productid": "GGOEYDHJ056099",
+      "name": "Coffee Mug",
+      "description": "Best Coffee Mug",
+      "price": "4.2",
+      "image": "products_Images/mug.jpg"
     },
     {
       "productid": "GGOEGAAX0351",
       "name": "Loafers",
       "description": "Most comfortable loafers",
       "price": "38.99",
-      "image": "products_Images/3.image.182234.jpg"
+      "image": "products_Images/loafers.jpg"
     },
     {
       "productid": "GGOEGDWC020199",
-      "name": "Coffee Mug",
-      "description": "Best Coffee Mug",
-      "price": "4.2",
-      "image": "products_Images/4.image.181817.jpg"
-    },
-    {
-      "productid": "GGOEGAAX0318",
       "name": "Hairdryer",
       "description": "Hotest hairdryer",
       "price": "84.99",
-      "image": "products_Images/2.image.182110.jpg"
+      "image": "products_Images/hairdryer.jpg"
+    },
+    {
+      "productid": "GGOEGAAX0318",
+      "name": "Bamboo glass jar",
+      "description": "Bamboo glass jar",
+      "price": "19.99",
+      "image": "products_Images/bamboo-glass-jar.jpg"
     }
   ]
 }
+
 ```
 
 **KEY TAKEAWAY**: the order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's becasue the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
