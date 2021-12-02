@@ -164,18 +164,19 @@ GGOEYDHJ056099  Coffee Mug          Best Coffee Mug           4.2    0         p
 The Apigee proxy will be deployed using Maven. 
 The Maven command will create and deploy a proxy (product-recommendations-v1), create an API Product (product-recommendations-v1-$ENV), create an App Developer (demo@any.com) and App (product-recommendations-v1-app-$ENV).
 
-Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, and `googletoken.email`. These values will be set via the command line.
+Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, `googletoken.email` and `api.userid`. These values will be set via the command line.
 ```
 <profile>
-    <id>eval</id> <!-- unique profile name -->
-    <properties>
-        <apigee.org>${apigeeOrg}</apigee.org>
-        <apigee.env>${apigeeEnv}</apigee.env>
-        <api.northbound.domain>${envGroupHostname}</api.northbound.domain>
-
-        <gcp.projectid>${gcpProjectId}</gcp.projectid> <!-- Same as org, could be remote project for BQ and Spanner -->
-        <apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email> <!-- SA Email for GCP Auth in Proxy -->
-    </properties>
+	<id>eval</id>
+	<properties>
+		<apigee.profile>eval</apigee.profile>
+		<apigee.org>${apigeeOrg}</apigee.org>
+		<apigee.env>${apigeeEnv}</apigee.env>
+		<api.northbound.domain>${envGroupHostname}</api.northbound.domain>
+		<gcp.projectid>${gcpProjectId}</gcp.projectid>
+		<apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
+		<api.userid>${customerUserId}</api.userid>
+	</properties>
 </profile>
 ```
 
@@ -186,7 +187,8 @@ mvn -P eval clean install -Dbearer=$(gcloud auth print-access-token) \
     -DapigeeEnv=$ENV \
     -DenvGroupHostname=$ENVGROUP_HOSTNAME \
     -DgcpProjectId=$PROJECT_ID \
-    -DgoogleTokenEmail=$SA
+    -DgoogleTokenEmail=$SA \
+    -DcustomerUserId=$CUSTOMER_USERID
 ```
 The result of the maven command shows the integration test output, one to `/openapi` and another to `/products`.
 It also displays the App credentials which can be used for susequent API test calls. 
