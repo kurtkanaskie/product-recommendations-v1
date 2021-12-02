@@ -54,7 +54,7 @@ git clone https://github.com/kurtkanaskie/product-recommendations-v1
 ```
 
 ### Set Environment Variables
-Set your environment variables:
+Set your environment variables (TIP: create a set_env_variables.sh file with these for easy replay):
 ```
 export PROJECT_ID=your_apigeex_project_name
 export ORG=$PROJECT_ID
@@ -84,14 +84,20 @@ Create a "datareader" service account and assign Spanner and BigQuery roles.
 gcloud iam service-accounts create datareader --display-name="Data reader for BQ and Spanner Demo"
 gcloud iam service-accounts list | grep datareader 
 
-export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f12)
+# For Cloud Shell
+export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f2)
+# From Mac the response includes the description
+# export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f12)
+
 # e.g. datareader@your-apigeex-project-name.iam.gserviceaccount.com
-echo $SA
 
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
 gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
+
+echo Service Account is: $SA
+
 ```
 
 ### Train BigQuery to Predict Customer Propensity
@@ -116,6 +122,9 @@ export CUSTOMER_USERID=6929470170340317899-1
 bq query --nouse_legacy_sql \
     "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A where A.userid = \"$CUSTOMER_USERID\"" \
     ORDER BY A.predicted_session_duration_confidence DESC
+```
+Example response:
+```
 +-----------------------+----------------+---------------------------------------+
 |        userId         |     itemId     | predicted_session_duration_confidence |
 +-----------------------+----------------+---------------------------------------+
@@ -139,7 +148,9 @@ It uses the `CUSTOMER_USERID` and outputs the entries that where created.
 You can also run a gcloud command to view, for example:
 ```
 gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
-
+```
+Sample response:
+```
 productid       name                description               price  discount  image
 GGOEGAAX0037    Aviator Sunglasses  The ultimate sunglasses   42.42  0         products_Images/sunglasses.jpg
 GGOEGAAX0318    Bamboo glass jar    Bamboo glass jar          19.99  0         products_Images/bamboo-glass-jar.jpg
@@ -205,7 +216,9 @@ curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
 -H "x-apikey:$APIKEY" \
 -H "x-userid:$CUSTOMER_USERID" \
 -H "Cache-Control:no-cache" | jq
-
+```
+Example response:
+```
 {
   "products": [
     {
@@ -271,7 +284,6 @@ Cleanup BigQuery using the [Cleanup components](https://cloud.google.com/archite
 
 ### Delete Service Account
 ```
-export SA=$(gcloud iam service-accounts list | grep datareader | cut -d" " -f12)
 gcloud iam service-accounts delete $SA
 ```
 
