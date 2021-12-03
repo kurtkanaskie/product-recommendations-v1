@@ -47,10 +47,10 @@
                 </Step>
                 <Step>
                     <Condition>request.header.cache-control = "no-cache"</Condition>
-                    <Name>CI-spanner-session</Name>
+                    <Name>IC-spanner-session</Name>
                 </Step>
                 <Step>
-                    <Name>CL-spanner-session</Name>
+                    <Name>LC-spanner-session</Name>
                 </Step>
                 <Step>
                     <Name>SC-spanner-session</Name>
@@ -61,7 +61,7 @@
                     <Condition>Spanner.session = null</Condition>
                 </Step>
                 <Step>
-                    <Name>CP-spanner-session</Name>
+                    <Name>PC-spanner-session</Name>
                     <Condition>Spanner.newSession != null</Condition>
                 </Step>
                 <Step>

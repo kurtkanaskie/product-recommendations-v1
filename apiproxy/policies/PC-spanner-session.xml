@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<PopulateCache async="false" continueOnError="false" enabled="true" name="CP-spanner-session">
-    <DisplayName>CP-spanner-session</DisplayName>
+<PopulateCache async="false" continueOnError="false" enabled="true" name="PC-spanner-session">
+    <DisplayName>PC-spanner-session</DisplayName>
     <CacheResource>spanner</CacheResource>
     <Scope>Application</Scope>
     <Source>Spanner.newSession</Source>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<LookupCache async="false" continueOnError="false" enabled="true" name="CL-spanner-session">
-    <DisplayName>CL-spanner-session</DisplayName>
+<LookupCache async="false" continueOnError="false" enabled="true" name="LC-spanner-session">
+    <DisplayName>LC-spanner-session</DisplayName>
     <Properties/>
     <CacheKey>
         <KeyFragment>Spanner.session</KeyFragment>
