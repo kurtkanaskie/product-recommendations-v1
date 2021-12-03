@@ -1,3 +1,5 @@
+id: product-recommendations-v1
+
 # WIP - TESTING - PRIVATE USE ONLY
 
 # Smart API to Predict Customer Propensity to buy using Apigee, BigQuery ML and Cloud Spanner
