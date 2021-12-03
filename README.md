@@ -49,6 +49,7 @@ The high level steps are:
 6. Install Apigee X proxy using [Maven](#setup-apigee-x-proxy)
 
 ## Setup
+Duration: 0:30:00 (if you don't already have Apigee X) 0:10:00 (otherwise)
 
 ### Clone Repository
 ```
@@ -102,7 +103,9 @@ echo Service Account is: $SA
 
 ```
 
-### Train BigQuery to Predict Customer Propensity
+## Train BigQuery to Predict Customer Propensity
+Duration: 0:30:00
+
 ___
 **NOTE:** Internal Google users, running the tutorial will require purchasing BigQuery flex slots which may require you to file an exemption, see [go/bq-flex-restrictions](https://g3doc.corp.google.com/cloud/helix/g3doc/reservations/flex-restrictions.md?cl=head) for more.
 ___
@@ -138,7 +141,8 @@ Example response:
 +-----------------------+----------------+---------------------------------------+
 ```
 
-### Setup Spanner Product Catalog
+## Setup Spanner Product Catalog
+Duration: 0:10:00
 
 The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s.
 
@@ -161,7 +165,8 @@ GGOEGDWC020199  Hairdryer           Hotest hairdryer          84.99  0         p
 GGOEYDHJ056099  Coffee Mug          Best Coffee Mug           4.2    0         products_Images/mug.jpg
 ```
 
-### Setup Apigee X Proxy
+## Setup Apigee X Proxy
+Duration: 0:10:00
 
 The Apigee proxy will be deployed using Maven. 
 The Maven command will create and deploy a proxy (product-recommendations-v1), create an API Product (product-recommendations-v1-$ENV), create an App Developer (demo@any.com) and App (product-recommendations-v1-app-$ENV).
@@ -195,7 +200,8 @@ mvn -P eval clean install -Dbearer=$(gcloud auth print-access-token) \
 The result of the maven command shows the integration test output, one to `/openapi` and another to `/products`.
 It also displays the App credentials which can be used for susequent API test calls. 
 
-### Testing the API Proxy
+## Testing the API Proxy
+Duration: 0:10:00
 
 You can get the API Key for the App using the Apigee API:
 ```
@@ -269,7 +275,7 @@ Example response:
 
 
 ## Cleanup
-
+Duration: 0:10:00
 ### Cleanup Apigee
 
 Run Maven to undeploy and delete proxy and it's associated artifacts, all in one command.
