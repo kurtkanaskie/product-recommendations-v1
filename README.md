@@ -31,7 +31,8 @@ Step Descriptions:
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
 
 ___
-**NOTE:** If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
+**NOTE:** If you don't have an Apigee X organization you can <a href="https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro" target="_blank">provision an evaluation organization</a>, that will require a billing account.
+
 ___
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
@@ -54,6 +55,7 @@ Duration: 0:30:00 (if you don't already have Apigee X) 0:10:00 (otherwise)
 ### Clone Repository
 ```
 git clone https://github.com/kurtkanaskie/product-recommendations-v1
+cd product-recommendations-v1
 ```
 
 ### Set Environment Variables
@@ -144,7 +146,7 @@ Example response:
 ## Setup Spanner Product Catalog
 Duration: 0:10:00
 
-The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s.
+The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s. This means that if you change the  `CUSTOMER_USERID` you may see different results or sparse results as Spanner does not contain the entire product catalog.
 
 NOTE: The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
