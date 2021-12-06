@@ -31,8 +31,7 @@ Step Descriptions:
 This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). 
 
 ___
-**NOTE:** If you don't have an Apigee X organization you can <a href="https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro" target="_blank">provision an evaluation organization</a>, that will require a billing account.
-
+**NOTE:** If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account.
 ___
 
 It uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
