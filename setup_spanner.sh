@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 echo; echo Using Apigee X project \"$PROJECT_ID\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$SPANNER_REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
