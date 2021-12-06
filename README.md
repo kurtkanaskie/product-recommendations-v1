@@ -58,7 +58,7 @@ cd product-recommendations-v1
 ```
 
 ### Set Environment Variables
-Set your environment variables (TIP: create a set_env_variables.sh file with these for easy replay):
+Set your environment variables (TIP: create a [set_env_values.sh](set_env_values.sh) file with these for easy replay):
 ```
 export PROJECT_ID=your_apigeex_project_name
 export ORG=$PROJECT_ID

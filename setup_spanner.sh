@@ -1,6 +1,6 @@
 #! /bin/bash
 
-echo; echo Using Apigee X project \"$PROJECT_ID\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
+echo; echo Using Apigee X project \"$PROJECT_ID\", instance \"$SPANNER_INSTANCE\", database \"$SPANNER_DATABASE\" in region \"$SPANNER_REGION\" for CUSTOMER_USERID \"$CUSTOMER_USERID\"
 read -p "OK to proceed (Y/n)? " i
 if [ "$i" != "Y" ]
 then
@@ -18,7 +18,7 @@ gcloud services enable spanner.googleapis.com
 
 # Using gcloud: https://cloud.google.com/spanner/docs/getting-started/gcloud
 # Create instance
-gcloud spanner instances create $SPANNER_INSTANCE --config=$REGION --description="Product Catalog Instance" --nodes=1
+gcloud spanner instances create $SPANNER_INSTANCE --config=$SPANNER_REGION --description="Product Catalog Instance" --nodes=1
 
 # Set default instance
 gcloud config set spanner/instance $SPANNER_INSTANCE
