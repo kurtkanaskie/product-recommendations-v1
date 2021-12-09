@@ -314,7 +314,7 @@ Cleanup BigQuery using the [Cleanup components](https://cloud.google.com/archite
 
 
 
-### Delete Service Account
+### Delete Service Account (optional)
 ```
 gcloud iam service-accounts delete $SA
 ```
