@@ -44,7 +44,7 @@ DATAS[4]="description=The ultimate sunglasses,discount=0,image=products_Images/s
 IDS_JSON=$(bq query --format json --nouse_legacy_sql \
   "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A where A.userid = \"$CUSTOMER_USERID\" \
   ORDER BY A.predicted_session_duration_confidence ASC")
-IDS=$(echo $IDS_JSON | jq -r .[].itemId)
+IDS=$(echo "$IDS_JSON" | jq -r .[].itemId)
 
 # Convert to an array
 # shellcheck disable=SC2206
