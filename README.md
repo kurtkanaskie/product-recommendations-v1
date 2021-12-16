@@ -67,7 +67,7 @@ cd product-recommendations-v1
 ```
 
 ### Set Environment Variables
-Create a copy of the [set_env_values.sh](set_env_values.sh) file with your values for easy replay via "source set_env_variables_my_apigeex.sh":
+Create a copy of the [set_env_variables.sh](set_env_variables.sh) file with your values for easy replay via "source set_env_variables_my_apigeex.sh":
 ```
 # Change to your values
 export PROJECT_ID=your_org_name
