@@ -100,14 +100,14 @@ gcloud services enable spanner.googleapis.com
 ```
 
 ## Create Service Accounts
-Create the "datareader" and "demo-installer" service accounts by running the [setup_service_accounts.sh](#setup_service_accounts.sh) shell script.
+Create the "datareader" and "demo-installer" service accounts by running the [setup_service_accounts.sh](setup_service_accounts.sh) shell script.
 
 ## Setup BigQuery Recommendations Dataset
 Duration: 0:05:00
 
 BigQuery contains an example dataset and table that shows a subset of results from a BigQuery Machine Learning training computation.
 
-Run the [setup_bigquery.sh](#setup_bigquery.sh) shell script to create the Dataset and table.
+Run the [setup_bigquery.sh](setup_bigquery.sh) shell script to create the Dataset and table.
 It outputs the entries from the table which contains multiple `userId`s.\
 Output:
 ```
@@ -170,7 +170,7 @@ The Spanner Product Catalog will only contain the items that where used in the B
 
 NOTE: The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
-Run the [setup_spanner.sh](#setup_spanner.sh) shell script to set up Spanner Product Catalog.
+Run the [setup_spanner.sh](setup_spanner.sh) shell script to set up Spanner Product Catalog.
 It uses the `CUSTOMER_USERID` and outputs the entries that where created. 
 
 You can also run a gcloud command to view, for example:
@@ -311,10 +311,10 @@ mvn -P eval process-resources -Dbearer=$(gcloud auth print-access-token) \
 ```
 
 ### Cleanup Spanner (optional)
-Remove the Spanner resources by running the [cleanup_spanner.sh](#cleanup_spanner.sh) shell script.
+Remove the Spanner resources by running the [cleanup_spanner.sh](cleanup_spanner.sh) shell script.
 
 ### Cleanup BigQuery (optional)
-Remove BigQuery resouces by running the [cleanup_bigquery.sh](#cleanup_bigquery.sh)
+Remove BigQuery resouces by running the [cleanup_bigquery.sh](cleanup_bigquery.sh)
 
 ### Delete Service Account (optional)
-Remove the service accounts by running the [cleanup_service_accounts.sh](#cleanup_service_accounts.sh)
+Remove the service accounts by running the [cleanup_service_accounts.sh](cleanup_service_accounts.sh)
