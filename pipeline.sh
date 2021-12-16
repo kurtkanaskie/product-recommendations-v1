@@ -15,7 +15,7 @@
 
 set -e
 
-echo "[INFO] Pipeline for product-recommendations-api in project \""$PROJECT_ID"\""
+echo "[INFO] Pipeline for product-recommendations-api in project: "$PROJECT_ID"
 
 # Set project for gcloud commands 
 gcloud config set project "$PROJECT_ID"
