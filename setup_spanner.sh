@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo; echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\" in region \""$SPANNER_REGION"\" for CUSTOMER_USERID \""$CUSTOMER_USERID"\"
+echo
+echo Using Apigee X project \""$PROJECT_ID"\", instance \""$SPANNER_INSTANCE"\", database \""$SPANNER_DATABASE"\" in region \""$SPANNER_REGION"\" for CUSTOMER_USERID \""$CUSTOMER_USERID"\"
 
 # Create instance
 gcloud spanner instances create "$SPANNER_INSTANCE" --config="$SPANNER_REGION" --description="Product Catalog Instance" --nodes=1
@@ -26,7 +27,7 @@ gcloud spanner databases create "$SPANNER_DATABASE" --instance "$SPANNER_INSTANC
 
 # Create database
 gcloud spanner databases ddl update "$SPANNER_DATABASE" \
---ddl='CREATE TABLE products (productid STRING(20) NOT NULL, name STRING(100), description STRING(1024), price FLOAT64, discount FLOAT64, image STRING(1024)) PRIMARY KEY(productid);'
+  --ddl='CREATE TABLE products (productid STRING(20) NOT NULL, name STRING(100), description STRING(1024), price FLOAT64, discount FLOAT64, image STRING(1024)) PRIMARY KEY(productid);'
 
 # Add product data to Spanner
 # Array of product Id data to be combined with Ids
