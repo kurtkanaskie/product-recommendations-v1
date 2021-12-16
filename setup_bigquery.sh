@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo; echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
+echo
+echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
 bq --location=us mk --dataset "$PROJECT_ID":bqml
 bq mk --table "$PROJECT_ID":bqml.prod_recommendations userId:STRING,itemId:STRING,predicted_session_duration_confidence:FLOAT
-bq load --autodetect --replace --source_format=NEWLINE_DELIMITED_JSON "$PROJECT_ID":bqml.prod_recommendations ./prod_recommendations.json
+bq load --autodetect --replace --source_format=NEWLINE_DELIMITED_JSON "$PROJECT_ID":bqml.prod_recommendations ./prod_recommendations_json.txt
 bq query --nouse_legacy_sql \
     "SELECT * FROM \`$PROJECT_ID.bqml.prod_recommendations\` AS A" \
     ORDER BY A.userId ASC, predicted_session_duration_confidence DESC

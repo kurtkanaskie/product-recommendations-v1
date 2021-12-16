@@ -17,18 +17,18 @@
 echo "[INFO] Pipeline for product-recommendations-api - create service account datareader"
 # Create Apigee datareater SA
 gcloud iam service-accounts create datareader --display-name="Data reader in Apigee proxy for BQ and Spanner Demo"
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
 
 echo "[INFO] Pipeline for product-recommendations-api - create service account demo-installer"
 # Create project demo-installer SA
 gcloud iam service-accounts create demo-installer --display-name="Installer for Apigee, BQ and Spanner Demo"
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA_INSTALLER" --role="roles/apigee.admin" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA_INSTALLER" --role="roles/bigquery.admin" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA_INSTALLER" --role="roles/spanner.admin" --quiet
-gcloud projects add-iam-policy-binding $PROJECT_ID --member="serviceAccount:$SA_INSTALLER" --role="roles/iam.serviceAccountUser" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/apigee.admin" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/bigquery.admin" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/spanner.admin" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_INSTALLER" --role="roles/iam.serviceAccountUser" --quiet
 gcloud iam service-accounts keys create demo-installer-key.json --iam-account="$SA_INSTALLER"
 gcloud auth activate-service-account "$SA_INSTALLER" --key-file=demo-installer-key.json
 gcloud config set account "$SA_INSTALLER"

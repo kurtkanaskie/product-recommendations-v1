@@ -17,8 +17,6 @@ set -e
 
 echo "[INFO] Pipeline for product-recommendations-api"
 
-set_env_variables_my_apigeex.sh
-
 # Set project for gcloud commands 
 gcloud config set project "$PROJECT_ID"
 
@@ -27,7 +25,7 @@ gcloud services enable bigquery.googleapis.com
 gcloud services enable spanner.googleapis.com
 
 echo "[INFO] Pipeline for product-recommendations-api - create service accounts"
-CURRENT_ACCOUNT=`gcloud config get-value account`
+CURRENT_ACCOUNT=$(gcloud config get-value account)
 setup_service_accounts.sh
 
 echo "[INFO] Pipeline for product-recommendations-api - setup bigquery"
@@ -38,18 +36,18 @@ setup_spanner.sh
 
 echo "[INFO] Pipeline for product-recommendations-api - maven apigee install"
 # This performs end-to-end install, configuration and testing API.
-mvn -P eval clean install -Dbearer=$(gcloud auth print-access-token) \
-    -DapigeeOrg=$ORG \
-    -DapigeeEnv=$ENV \
-    -DenvGroupHostname=$ENVGROUP_HOSTNAME \
-    -DgcpProjectId=$PROJECT_ID \
-    -DgoogleTokenEmail=$SA \
-    -DcustomerUserId=$CUSTOMER_USERID
+mvn -P eval clean install -Dbearer="$(gcloud auth print-access-token)" \
+    -DapigeeOrg="$ORG" \
+    -DapigeeEnv="$ENV" \
+    -DenvGroupHostname="$ENVGROUP_HOSTNAME" \
+    -DgcpProjectId="$PROJECT_ID" \
+    -DgoogleTokenEmail="$SA" \
+    -DcustomerUserId="$CUSTOMER_USERID"
 
 echo "[INFO] Pipeline for product-recommendations-api - get APIKEY"
 # Apigee API call to get API key for use in API calls.
 APIKEY=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV \
+    https://apigee.googleapis.com/v1/organizations/"$ORG"/developers/demo@any.com/apps/product-recommendations-v1-app-"$ENV" \
     | jq -r .credentials[0].consumerKey)
 
 echo "[INFO] Pipeline for product-recommendations-api - test api"
@@ -60,8 +58,8 @@ curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
 -H "Cache-Control:no-cache" | jq
 
 echo "[INFO] Pipeline for product-recommendations-api - maven apigee clean"
-mvn -P eval process-resources -Dbearer=$(gcloud auth print-access-token) \
-    -DapigeeOrg=$ORG -DapigeeEnv=$ENV -Dskip.integration=true \
+mvn -P eval process-resources -Dbearer="$(gcloud auth print-access-token)" \
+    -DapigeeOrg="$ORG" -DapigeeEnv="$ENV" -Dskip.integration=true \
     apigee-config:apps apigee-config:apiproducts apigee-config:developers -Dapigee.config.options=delete \
     apigee-enterprise:deploy -Dapigee.options=clean
 

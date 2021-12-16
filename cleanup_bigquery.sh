@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo; echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
+echo
+echo Using Apigee X project \""$PROJECT_ID"\" and dataset bqml
 
 gcloud alpha bq datasets delete bqml --remove-tables --quiet

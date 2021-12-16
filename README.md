@@ -58,7 +58,7 @@ As "demo-installer" Service Account
 5. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
 
 ## Setup
-Duration: 0:30:00 (if you don't already have Apigee X) 0:10:00 (otherwise)
+Duration: 0:10:00 (if you already have Apigee X, otherwise 0:30:00)
 
 ### Clone Repository
 ```
