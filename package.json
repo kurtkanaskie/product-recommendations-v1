@@ -7,30 +7,13 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
+    "eslint": "eslint --format json",
     "apigeelint": "node ./node_modules/apigeelint/cli.js -e PO003,PO007,TD002 -s ./apiproxy --profile apigeex -f table",
-    "integration": "node ./node_modules/cucumber/bin/cucumber.js target/test/integration/features"
+    "integration": "node ./node_modules/@cucumber/cucumber/bin/cucumber-js target/test/integration"
   },
   "devDependencies": {
-    "apickli": "^3.0.0",
-    "apigeelint": "2.11.0",
-    "chai": "^4.3.4",
-    "chai-fuzzy": "^1.6.1",
-    "cucumber": "^1.0.0",
-    "mocha": "^9.1.3",
-    "sinon": "^12.0.1"
-  },
-  "jshintConfig": {
-    "predef": [
-      "console",
-      "context"
-    ],
-    "curly": true,
-    "eqeqeq": true,
-    "forin": true,
-    "undef": true,
-    "latedef": true,
-    "noempty": true,
-    "nonew": true,
-    "unused": true
+    "@cucumber/cucumber": "^7.3.0",
+    "apickli": "^3.0.1",
+    "apigeelint": "^2.15.0"
   }
 }

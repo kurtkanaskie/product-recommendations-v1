@@ -17,11 +17,10 @@
 
 # Change to your values
 export PROJECT_ID=your_org_name
-gcloud config set project "$PROJECT_ID"
 export ORG=$PROJECT_ID
 export ENV=your_env
 export ENVGROUP_HOSTNAME=your_api_domain_name
-export CUSTOMER_USERID="6929470170340317899-1"
+export CUSTOMER_USERID="your_user_id"
 
 # No need to change these
 export SPANNER_INSTANCE=product-catalog

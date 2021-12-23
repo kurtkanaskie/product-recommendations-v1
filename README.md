@@ -1,11 +1,9 @@
-id: product-recommendations-v1
-
 # Smart API to Predict Customer Propensity to buy using Apigee, BigQuery ML and Cloud Spanner
-## Overview 
 
-This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X proxy, BigQuery ML and Cloud Spanner.
+## Overview
+This demo shows how to bild a smart API that predicts customer propensity to buy using an Apigee X or Hybrid proxy, BigQuery ML and Cloud Spanner.
 
-BigQuery contains a sample dataset for the all Product Catalog Ids and a number of simulated users. 
+BigQuery contains a sample dataset for the Product Catalog Ids and a number of simulated users.
 It uses Machine Learning to add their propensity to buy based on the time the user spends viewing an item, termed the "predicted session duration confidence", which is a numerical value ordered descending (higher is more likely to buy).
 
 Cloud Spanner contains a Product Catalog with rich content, such as descriptions and image references. The demo only contains entries for a specific customer Id.
@@ -19,22 +17,22 @@ The proxy then uses both responses to create the priority sorted result that is 
 
 Step Descriptions:
 1. Client request to GET /v1/recommendations/products with API Key and User Id.
-2. Apigee extracts user Id from request header, creates a SQL query using Assign Message policy, sends that to BigQuery and processes the response.
-3. Apigee creates a Spanner session via Service Callout policy and stores the session name.
+2. Apigee extracts user Id from request header (see note), creates a SQL query using Assign Message policy, sends that to BigQuery and processes the response.
+3. Apigee creates a [Spanner session](https://cloud.google.com/spanner/docs/sessions) via Service Callout policy and stores the session name.
 4. Apigee then creates a SQL query for Spanner using another Service Callout policy to get the ordered response based on the BigQuery prepensity rating returned from BigQuery.
 5. Finally, Apigee formats the response using JavaScript to match the response definition from the Open API Specification.
 
-## Prerequisites 
+**NOTE:**
+Passing the user Id as a header value is done for the purposes of the demo.
+In a real-world solution, it would be provided via a separate authentication flow and passed as token in the Authorization header.
 
-This demo relies on the use of a GCP Project for [Apigee X](), [Big Query]() and [Cloud Spanner](). \
+## Prerequisites
+This demo relies on the use of a GCP Project for [Apigee](https://cloud.google.com/apigee), [Big Query](https://cloud.google.com/bigquery) and [Cloud Spanner](https://cloud.google.com/spanner).
 
-___
-**NOTE:** \
-If you don't have an Apigee X organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro), that will require a billing account. Provisioning can take up to an hour.\
-In either case your Apigee X org should be configured to have external access.
-___
+**NOTE:**
+If you don't have an Apigee organization you can [provision an evaluation organization](https://cloud.google.com/apigee/docs/api-platform/get-started/provisioning-intro).
 
-The demo uses [gcloud](https://cloud.google.com/sdk/gcloud) and [Maven](https://maven.apache.org/), both can be run from the GCloud shell without any installation.
+The demo uses [gcloud](https://cloud.google.com/sdk/gcloud), [Maven](https://maven.apache.org/), and [jq](https://github.com/stedolan/jq), all of which can be run from the gcloud shell without any installation.
 
 The API proxy uses a Service Account (e.g. datareader) for GCP authentication to access Big Query and Spanner.\
 We'll use a separate Service Account (e.g. demo-installer) to setup BigQuery, Spanner and Apigee.\
@@ -44,73 +42,65 @@ It will have the following roles:
 - Cloud Spanner Admin
 - Service Account User
 
-### Overview of Steps:
+### Overview of Steps
 As Project Owner
-1. First [clone this repository](#clone-repository).
-2. Then [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
-3. Using an existing GCP Project or after creating a GCP Project, [create Service Accounts for proxy deployment and installer](#create-service-accounts).
-
-As "demo-installer" Service Account
-1. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
-2. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
-3. Install Apigee X proxy using the [Maven command](#setup-apigee-x-proxy).
-4. [Test the API proxy](#test-the-api-proxy).
-5. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
+1. First [set environment variables](#set-environment-variables) and [enable APIs](#enable-apis).
+2. Using an existing GCP Project or after creating a GCP Project, [create Service Account for proxy deployment](#create-service-account).
+3. Install a sample dataset using [Setup BigQuery Recommendations Dataset](#setup-bigquery-recommendations-dataset).
+4. Install a Product Catalog using [Setup Spanner Product Catalog](#setup-spanner-product-catalog).
+5. Install Apigee proxy using the [Maven command](#setup-apigee-proxy).
+6. [Testing the API proxy](#testing-the-api-proxy).
+7. Remove created artifacts in the [Cleanup](#cleanup) section (optional).
 
 ## Setup
-Duration: 0:10:00 (if you already have Apigee X, otherwise 0:30:00)
-
-### Clone Repository
-```
-git clone https://github.com/kurtkanaskie/product-recommendations-v1
-cd product-recommendations-v1
-```
 
 ### Set Environment Variables
 Create a copy of the [set_env_variables.sh](set_env_variables.sh) file with your values for easy replay via "source set_env_variables_my_apigeex.sh":
-```
+```lang-shell
 # Change to your values
 export PROJECT_ID=your_org_name
 gcloud config set project "$PROJECT_ID"
 export ORG=$PROJECT_ID
 export ENV=your_env
 export ENVGROUP_HOSTNAME=your_api_domain_name
-export CUSTOMER_USERID="6929470170340317899-1"
 
 # No need to change these
 export SPANNER_INSTANCE=product-catalog
 export SPANNER_DATABASE=product-catalog-v1
 export SPANNER_REGION=regional-us-east1
 export SA=datareader@$PROJECT_ID.iam.gserviceaccount.com
-export SA_INSTALLER=demo-installer@$PROJECT_ID.iam.gserviceaccount.com
 ```
-Other environment variables that are set below
-```
-# For Apigee X proxy deployment and API calls
+Other environment variables that are set below:
+```lang-shell
+# For Apigee proxy deployment and API calls
 CUSTOMER_USERID
 APIKEY
 ```
 
 ### Enable APIs
 Enable APIs for BigQuery and Spanner.
-```
-gcloud services enable apigee.googleapis.com
-gcloud services enable bigquery.googleapis.com 
+```lang-shell
+gcloud services enable bigquery.googleapis.com
 gcloud services enable spanner.googleapis.com
 ```
 
-## Create Service Accounts
-Create the "datareader" and "demo-installer" service accounts by running the [setup_service_accounts.sh](setup_service_accounts.sh) shell script.
+## Create Service Account
+Create the "datareader" service account that is used during proxy deployment.
+```lang-shell
+gcloud iam service-accounts create datareader --project="$PROJECT_ID" --display-name="Data reader in Apigee proxy for BQ and Spanner Demo"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseUser" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/spanner.databaseReader" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.dataViewer" --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role="roles/bigquery.user" --quiet
+```
 
 ## Setup BigQuery Recommendations Dataset
-Duration: 0:05:00
-
 BigQuery contains an example dataset and table that shows a subset of results from a BigQuery Machine Learning training computation.
 
 Run the [setup_bigquery.sh](setup_bigquery.sh) shell script to create the Dataset and table.
 It outputs the entries from the table which contains multiple `userId`s.\
 Output:
-```
+```lang-shell
 +-----------------------+----------------+---------------------------------------+
 |        userId         |     itemId     | predicted_session_duration_confidence |
 +-----------------------+----------------+---------------------------------------+
@@ -143,7 +133,7 @@ Now run a BigQuery query command to show the "prediction" ordered results for a 
 
 For example:
 
-```
+```lang-shell
 export CUSTOMER_USERID=6929470170340317899-1
 
 bq query --nouse_legacy_sql \
@@ -151,7 +141,7 @@ bq query --nouse_legacy_sql \
     ORDER BY A.predicted_session_duration_confidence DESC
 ```
 Example response:
-```
+```lang-shell
 +-----------------------+----------------+---------------------------------------+
 |        userId         |     itemId     | predicted_session_duration_confidence |
 +-----------------------+----------------+---------------------------------------+
@@ -164,21 +154,19 @@ Example response:
 ```
 
 ## Setup Spanner Product Catalog
-Duration: 0:10:00
-
 The Spanner Product Catalog will only contain the items that where used in the BigQuery training step for a specific user. We'll create product entries using those `itemID`s. This means that if you change the  `CUSTOMER_USERID` you may see different results or sparse results as Spanner does not contain the entire product catalog.
 
-NOTE: The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
+**NOTE:** The order in which the items are returned from Spanner is different than those returned from BigQuery. This allows us to observe the differences from the "prediction".
 
 Run the [setup_spanner.sh](setup_spanner.sh) shell script to set up Spanner Product Catalog.
-It uses the `CUSTOMER_USERID` and outputs the entries that where created. 
+It uses the `CUSTOMER_USERID` and outputs the entries that where created.
 
 You can also run a gcloud command to view, for example:
-```
-gcloud spanner databases execute-sql $SPANNER_DATABASE --sql='SELECT * FROM products'
+```lang-shell
+gcloud spanner databases execute-sql $SPANNER_DATABASE --project=$PROJECT_ID --sql='SELECT * FROM products'
 ```
 Sample response:
-```
+```lang-shell
 productid       name                description               price  discount  image
 GGOEGAAX0037    Aviator Sunglasses  The ultimate sunglasses   42.42  0         products_Images/sunglasses.jpg
 GGOEGAAX0318    Bamboo glass jar    Bamboo glass jar          19.99  0         products_Images/bamboo-glass-jar.jpg
@@ -187,54 +175,50 @@ GGOEGDWC020199  Hairdryer           Hotest hairdryer          84.99  0         p
 GGOEYDHJ056099  Coffee Mug          Best Coffee Mug           4.2    0         products_Images/mug.jpg
 ```
 
-## Setup Apigee X Proxy
-Duration: 0:10:00
-
-The Apigee proxy will be deployed using Maven. 
+## Setup Apigee Proxy
+The Apigee proxy will be deployed using Maven.
 The Maven command will create and deploy a proxy (product-recommendations-v1), create an API Product (product-recommendations-v1-$ENV), create an App Developer (demo@any.com) and App (product-recommendations-v1-app-$ENV).
 
 Note the pom.xml file profile values for `apigee.org`, `apigee.env`, `api.northbound.domain`, `gcp.projectid`, `googletoken.email` and `api.userid`. These values vary by project and will be set via the command line.
-```
+```lang-xml
 <profile>
-	<id>eval</id>
-	<properties>
-		<apigee.profile>eval</apigee.profile>
-		<apigee.org>${apigeeOrg}</apigee.org>
-		<apigee.env>${apigeeEnv}</apigee.env>
-		<api.northbound.domain>${envGroupHostname}</api.northbound.domain>
-		<gcp.projectid>${gcpProjectId}</gcp.projectid>
-		<apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
-		<api.userid>${customerUserId}</api.userid>
-	</properties>
+  <id>eval</id>
+  <properties>
+    <apigee.profile>eval</apigee.profile>
+    <apigee.org>${apigeeOrg}</apigee.org>
+    <apigee.env>${apigeeEnv}</apigee.env>
+    <api.northbound.domain>${envGroupHostname}</api.northbound.domain>
+    <gcp.projectid>${gcpProjectId}</gcp.projectid>
+    <apigee.googletoken.email>${googleTokenEmail}</apigee.googletoken.email>
+    <api.userid>${integrationTestUserId}</api.userid>
+  </properties>
 </profile>
 ```
 
-Run Maven to install the proxy and it's associated artifacts and then test the API, all in one command.
-```
+Run Maven to install the proxy and its associated artifacts and then test the API, all in one command.
+```lang-shell
 mvn -P eval clean install -Dbearer=$(gcloud auth print-access-token) \
     -DapigeeOrg=$ORG \
     -DapigeeEnv=$ENV \
     -DenvGroupHostname=$ENVGROUP_HOSTNAME \
     -DgcpProjectId=$PROJECT_ID \
     -DgoogleTokenEmail=$SA \
-    -DcustomerUserId=$CUSTOMER_USERID
+    -DintegrationTestUserId=$CUSTOMER_USERID
 ```
 The result of the maven command shows the integration test output, one to `/openapi` and another to `/products`.
-It also displays the App credentials which can be used for susequent API test calls. 
+It also displays the App credentials which can be used for susequent API test calls.
 
 ## Testing the API Proxy
-Duration: 0:10:00
-
 You can get the API Key for the App using the Apigee API:
-```
+```lang-shell
 APIKEY=$(curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     https://apigee.googleapis.com/v1/organizations/$ORG/developers/demo@any.com/apps/product-recommendations-v1-app-$ENV \
     | jq -r .credentials[0].consumerKey)
 ```
 
 Then test using curl, for example:
-```
-curl -s https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H x-apikey:$APIKEY -H "x-userid:$CUSTOMER_USERID" | jq
+```lang-shell
+curl -s https://$ENVGROUP_HOSTNAME/v1/recommendations/products -H "x-apikey:$APIKEY" -H "x-userid:$CUSTOMER_USERID" | jq
 ```
 
 The API defined by the Open API Specification in [product-recommendations-v1-oas.yaml](product-recommendations-v1-oas.yaml) allows the request to specify headers:
@@ -243,14 +227,14 @@ The API defined by the Open API Specification in [product-recommendations-v1-oas
 * cache-control: cache the response for 300 seconds or override by specifying "no-cache".
 
 Example:
-```
+```lang-shell
 curl -s "https://$ENVGROUP_HOSTNAME/v1/recommendations/products" \
 -H "x-apikey:$APIKEY" \
 -H "x-userid:$CUSTOMER_USERID" \
 -H "Cache-Control:no-cache" | jq
 ```
 Example response:
-```
+```lang-json
 {
   "products": [
     {
@@ -290,20 +274,16 @@ Example response:
     }
   ]
 }
-
 ```
 ## Key Takeaway
 The order of the items in the API response is that provided by BigQuery and is a different order than the output from Spanner. That's because the API proxy first gets the "prediction" ordered results from BigQuery and then combines that with the product details from Spanner.
 
 ## Cleanup
-Duration: 0:10:00
-
-You can cleanup your project rather than deleting the entire project as you may want to continue to use Apigee X.
+You can cleanup your project rather than deleting the entire project as you may want to continue to use Apigee.
 
 ### Cleanup Apigee (optional)
-
 Run Maven to undeploy and delete proxy and it's associated artifacts, all in one command.
-```
+```lang-shell
 mvn -P eval process-resources -Dbearer=$(gcloud auth print-access-token) \
     -DapigeeOrg=$ORG -DapigeeEnv=$ENV -Dskip.integration=true \
     apigee-config:apps apigee-config:apiproducts apigee-config:developers -Dapigee.config.options=delete \
@@ -317,4 +297,6 @@ Remove the Spanner resources by running the [cleanup_spanner.sh](cleanup_spanner
 Remove BigQuery resouces by running the [cleanup_bigquery.sh](cleanup_bigquery.sh)
 
 ### Delete Service Account (optional)
-Remove the service accounts by running the [cleanup_service_accounts.sh](cleanup_service_accounts.sh)
+```lang-shell
+gcloud iam service-accounts delete "$SA" --project="$PROJECT_ID" --quiet
+```

@@ -11,14 +11,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<ResponseCache name="RC-uri">
-    <CacheKey>
-        <KeyFragment ref="request.uri" type="string"/>
-    </CacheKey>
-    <Scope>Exclusive</Scope>
-    <ExpirySettings>
-        <TimeoutInSeconds>300</TimeoutInSeconds>
-    </ExpirySettings>
-    <ExcludeErrorResponse>true</ExcludeErrorResponse>
-    <SkipCacheLookup>request.header.cache-control = "no-cache"</SkipCacheLookup>
-</ResponseCache>
+<RaiseFault name="RF-not-found">
+    <FaultResponse>
+        <Set>
+            <Headers/>
+            <Payload contentType="application/json">
+{
+    "error":"Resource not found",
+    "description":"Resource not found for {request.verb} at {client.scheme}://{request.header.host}/{request.uri}"
+}
+</Payload>
+            <StatusCode>404</StatusCode>
+            <ReasonPhrase>Not Found</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+    <ShortFaultReason>false</ShortFaultReason>
+</RaiseFault>
