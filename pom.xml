@@ -230,31 +230,39 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.8.0</version>
+				<version>1.12.0</version>
 				<!-- NOTE: put executable in targetnode, otherwise uses node and deploy plugin thinks its a node.js proxy -->
 				<configuration>
 					<installDirectory>targetnode</installDirectory>
+					<nodeVersion>v12.22.0</nodeVersion>
+					<npmVersion>8.3.0</npmVersion>
 				</configuration>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>install-node-and-npm</id>
 						<phase>validate</phase>
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
-						<configuration>
-							<nodeVersion>v12.22.0</nodeVersion>
-							<npmVersion>8.3.0</npmVersion>
-						</configuration>
 					</execution>
 					<execution>
-						<id>npm install</id>
+						<id>npm-install</id>
 						<phase>validate</phase>
 						<goals>
 							<goal>npm</goal>
 						</goals>
 						<configuration>
 							<arguments>install</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm-versions</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run node-versions</arguments>
 						</configuration>
 					</execution>
 					<execution>
@@ -300,6 +308,13 @@
 					<execution>
 						<id>auto-clean-install</id>
 						<phase>install</phase>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>targetnode</directory>
+								</fileset>
+							</filesets>
+						</configuration>
 						<goals>
 							<goal>clean</goal>
 						</goals>
