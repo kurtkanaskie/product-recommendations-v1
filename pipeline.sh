@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2181
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +44,7 @@ mvn -P eval clean install -Dbearer="$(gcloud auth print-access-token)" \
     -DgcpProjectId="$PROJECT_ID" \
     -DgoogleTokenEmail="$SA" \
     -DintegrationTestUserId="$CUSTOMER_USERID"
-if [ $? == 1 ]; then
+if [ $? != 0 ]; then
     echo "Pipeline for product-recommendations - maven apigee install failed, cleaning up bigquery and spanner"
     ./cleanup_bigquery.sh
     ./cleanup_spanner.sh
